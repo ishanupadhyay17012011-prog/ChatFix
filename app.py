@@ -39,7 +39,7 @@ if st.button("✨ Generate Reply", use_container_width=True):
         }
 
         data = {
-            "model": "mistralai/mistral-7b-instruct",
+            "model": "openchat/openchat-3.5-0106",
             "messages": [
                 {"role": "user", "content": prompt}
             ]
