@@ -57,5 +57,5 @@ if st.button("✨ Generate Reply", use_container_width=True):
             reply = result["choices"][0]["message"]["content"]
             st.success("Here are your replies:")
             st.write(reply)
-        except:
-            st.error("Something went wrong. Try again.")
+        except Exception as e:
+            st.error(f"Error: {result}")
