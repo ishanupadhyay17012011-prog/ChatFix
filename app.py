@@ -39,7 +39,7 @@ if st.button("✨ Generate Reply", use_container_width=True):
         }
 
         data = {
-            "model": "openchat/openchat-3.5-0106",
+            "model": "meta-llama/llama-3-8b-instruct",
             "messages": [
                 {"role": "user", "content": prompt}
             ]
