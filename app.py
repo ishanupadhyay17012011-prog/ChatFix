@@ -1,4 +1,5 @@
 import streamlit as st
+import requests
 
 st.set_page_config(page_title="ChatFix", page_icon="💬", layout="centered")
 
@@ -8,9 +9,7 @@ st.markdown("<p style='text-align: center; color: grey;'>AI-powered reply genera
 
 st.divider()
 
-# Input
-st.markdown("### 📩 Message")
-message = st.text_area("", placeholder="Paste the message you received...")
+message = st.text_area("📩 Paste the message")
 
 col1, col2 = st.columns(2)
 
@@ -26,8 +25,37 @@ if st.button("✨ Generate Reply", use_container_width=True):
     if message.strip() == "":
         st.warning("⚠️ Please enter a message")
     else:
-        st.success("Here are your replies:")
+        api_key = st.secrets["OPENROUTER_API_KEY"]
 
-        st.markdown("**1.** That sounds great! Let me think about it and get back to you.")
-        st.markdown("**2.** I appreciate your message — here’s a smarter way to respond.")
-        st.markdown("**3.** Got it! This reply sounds more confident and clear.")
+        prompt = f"""
+        Generate 3 {tone} replies for a message from a {context}.
+        Message: {message}
+        Keep replies short and natural.
+        """
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+
+        data = {
+            "model": "mistralai/mistral-7b-instruct",
+            "messages": [
+                {"role": "user", "content": prompt}
+            ]
+        }
+
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers=headers,
+            json=data
+        )
+
+        result = response.json()
+
+        try:
+            reply = result["choices"][0]["message"]["content"]
+            st.success("Here are your replies:")
+            st.write(reply)
+        except:
+            st.error("Something went wrong. Try again.")
