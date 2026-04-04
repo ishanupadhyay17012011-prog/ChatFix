@@ -6,8 +6,6 @@ st.set_page_config(page_title="ChatFix", page_icon="💬", layout="centered")
 # Header
 st.markdown("<h1 style='text-align: center;'>💬 ChatFix</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: grey;'>AI-powered reply generator</p>", unsafe_allow_html=True)
-
-# Subtle branding (proper placement)
 st.markdown("<p style='text-align: center; font-size: 12px; color: grey;'>ChatFix • AI Assistant</p>", unsafe_allow_html=True)
 
 st.divider()
@@ -36,21 +34,21 @@ if st.button("✨ Generate Reply", use_container_width=True):
             api_key = st.secrets["OPENROUTER_API_KEY"]
 
             prompt = f"""
-            Generate exactly 3 replies.
+Generate exactly 3 different replies.
 
-            Tone: {tone}
-            Context: {context}
-            Mode: {mode}
+Tone: {tone}
+Context: {context}
+Mode: {mode}
 
-            Message:
-            {message}
+Message:
+{message}
 
-            Rules:
-            - Only output the replies
-            - No extra text
-            - No explanations
-            - Each reply on a new line
-            """
+Rules:
+- Output ONLY 3 replies
+- Each reply must be on a NEW LINE
+- Do NOT combine replies
+- Do NOT add numbering or extra text
+"""
 
             headers = {
                 "Authorization": f"Bearer {api_key}",
@@ -75,24 +73,25 @@ if st.button("✨ Generate Reply", use_container_width=True):
             try:
                 reply = result["choices"][0]["message"]["content"]
 
-                # Clean output
-                lines = reply.split("\n")
-                clean_replies = []
+                # Clean and split replies
+                lines = [line.strip() for line in reply.split("\n") if line.strip()]
 
-                for line in lines:
-                    line = line.strip()
-                    if line:
-                        clean_replies.append(line)
+                # Fallback if AI sends one block
+                if len(lines) < 3:
+                    lines = reply.replace(".", ".\n").split("\n")
+
+                clean_replies = [line.strip() for line in lines if line.strip()]
 
                 st.success("💡 Replies:")
 
-                for i, r in enumerate(clean_replies):
+                for r in clean_replies[:3]:
                     st.markdown(f"""
                     <div style="
-                        padding: 10px;
+                        padding: 12px;
                         border-radius: 10px;
                         background-color: #1e1e1e;
                         margin-bottom: 10px;
+                        font-size: 15px;
                     ">
                         {r}
                     </div>
