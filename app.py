@@ -6,7 +6,9 @@ st.set_page_config(page_title="ChatFix", page_icon="💬", layout="centered")
 # Header
 st.markdown("<h1 style='text-align: center;'>💬 ChatFix</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: grey;'>AI-powered reply generator</p>", unsafe_allow_html=True)
-st.caption("Built by Ishan 🚀")
+
+# Subtle branding (proper placement)
+st.markdown("<p style='text-align: center; font-size: 12px; color: grey;'>ChatFix • AI Assistant</p>", unsafe_allow_html=True)
 
 st.divider()
 
@@ -21,7 +23,7 @@ with col1:
 with col2:
     context = st.selectbox("👤 Context", ["Friend", "Crush", "Boss", "Stranger"])
 
-# Extra mode
+# Mode
 mode = st.selectbox("🔥 Mode", ["Normal", "Flirty ❤️", "Savage 😈", "Apology 🙏"])
 
 st.divider()
@@ -34,9 +36,8 @@ if st.button("✨ Generate Reply", use_container_width=True):
             api_key = st.secrets["OPENROUTER_API_KEY"]
 
             prompt = f"""
-            You are a smart assistant.
+            Generate exactly 3 replies.
 
-            Generate 3 replies based on:
             Tone: {tone}
             Context: {context}
             Mode: {mode}
@@ -45,10 +46,10 @@ if st.button("✨ Generate Reply", use_container_width=True):
             {message}
 
             Rules:
-            - Keep replies short
-            - Make them realistic
-            - Sound human, not robotic
-            - Number them clearly (1, 2, 3)
+            - Only output the replies
+            - No extra text
+            - No explanations
+            - Each reply on a new line
             """
 
             headers = {
@@ -74,14 +75,28 @@ if st.button("✨ Generate Reply", use_container_width=True):
             try:
                 reply = result["choices"][0]["message"]["content"]
 
-                st.success("💡 Here are your replies:")
+                # Clean output
+                lines = reply.split("\n")
+                clean_replies = []
 
-                replies = reply.split("\n")
+                for line in lines:
+                    line = line.strip()
+                    if line:
+                        clean_replies.append(line)
 
-                for i, r in enumerate(replies):
-                    if r.strip():
-                        st.markdown(f"### {r}")
-                        st.code(r, language=None)
+                st.success("💡 Replies:")
+
+                for i, r in enumerate(clean_replies):
+                    st.markdown(f"""
+                    <div style="
+                        padding: 10px;
+                        border-radius: 10px;
+                        background-color: #1e1e1e;
+                        margin-bottom: 10px;
+                    ">
+                        {r}
+                    </div>
+                    """, unsafe_allow_html=True)
 
             except Exception as e:
                 st.error(f"Error: {result}")
